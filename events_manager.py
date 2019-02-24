@@ -47,16 +47,30 @@ class EventsManager():
         
         self.behavior = random.choice(honesty_space)
         
-    def setForCheck(self, opponents, advice):
+    def setForCheck(self, passed_record, opponents, advice):
         ''' Set description for player-checks-player
             event. '''
-        players = opponents + ['user']
+        if advice:
+            future_event['checks'] = 'user'
+        else:
+            future_event['checks'] = random.choice(opponents)
+        future_event['checked'] = passed_record[-1]
         
     def setForCarry(self):
         ''' Set description for pile-to-player event. '''
+        assert current_event['type'] == 'player to pile'
+        assert next_event['type'] == 'player checks'
+        if current_event['declared'] == current_event['passed']:
+            future_event['won'] = next_event['checked']
+            future_event['lost'] = next_event['checks']
+        else:
+            future_event['won'] = next_event['checks']
+            future_event['lost'] = next_event['checked']
     
     def setForTermination(self):
         ''' Set description for termination event. '''
+        assert next_event['type'] == 'player checks'
+        future_event['winner'] = next_event['checked']
         
     def setForPass(self, values, opponents, contents):
         ''' Set description for player-to-pile event. '''
@@ -145,7 +159,7 @@ class EventsManager():
     def describeEvent(self, contents, opponents, values, advice):
         ''' Fill future event with details based on its type. '''
         if future_event['type'] == 'player checks':
-            self.setForCheck(opponents, advice)
+            self.setForCheck(passed_record, opponents, advice)
         elif future_event['type'] == 'player to pile':
             self.setForPass(values, opponents, contents)
         elif future_event['type'] == 'pile to player':
