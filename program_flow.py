@@ -11,6 +11,7 @@ honesty_rec = HonestyRecord()
 
 # Initialization of all variables (Preparation).
 settings.getSettings()
+calc_data.createInitial(settings.values, settings.players)
 game.distribDeck(settings.values, settings.players)
 game.updateCalcData(calc_data)
 events_manager.initEvents(settings.values, settings.players,
